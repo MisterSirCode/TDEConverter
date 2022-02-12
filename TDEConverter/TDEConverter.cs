@@ -59,7 +59,7 @@ namespace TDEConverter
             {
                 MessageBox.Show("All Done", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            listBox1.Items.Clear();
+            ItemBox.Items.Clear();
             fileNames = new List<string>();
         }
 
@@ -71,7 +71,7 @@ namespace TDEConverter
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     fileNames.AddRange(dialog.FileNames);
-                    listBox1.Items.AddRange(dialog.FileNames.Select(n => n.EndsWith(".tde") ? n + " (decrypt)" : n + " (encrypt)").ToArray());
+                    ItemBox.Items.AddRange(dialog.FileNames.Select(n => n.EndsWith(".tde") ? n + " (decrypt)" : n + " (encrypt)").ToArray());
                 }
             }
         }
