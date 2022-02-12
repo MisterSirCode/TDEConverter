@@ -22,20 +22,22 @@ namespace TDEConverter
         private const string a = "599Cc51887A8cb0C20F9CdE34cf9e0A535E5cAd1C26c7b562596ACC207Ae9A0bfB3E3161f31af5bEf1c2f064b3628174D83BF6E0739D9D6918fD9C2Eba02D5aD";
         private const string b = "0C3b676fe8d7188Cde022F71632830F36b98b181aD48Fed160006eA59";
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Convert(string fileName)
         {
-            using (OpenFileDialog dialog = new OpenFileDialog())
+            string outpath = fileName.EndsWith(".tde") ? fileName.Substring(0, fileName.Length - 4) : fileName + ".tde";
+            using (FileStream fin =new FileStream(fileName,FileMode.Open), fout =new FileStream(outpath,FileMode.Create))
             {
-                dialog.Multiselect = true;
-                if (dialog.ShowDialog() == DialogResult.OK)
+                int dat, i = 0;
+                while ((dat = fin.ReadByte()) != -1)
                 {
-                    fileNames.AddRange(dialog.FileNames);
-                    listBox1.Items.AddRange(dialog.FileNames.Select(n => n.EndsWith(".tde") ? n + " (decrypt)" : n + " (encrypt)").ToArray());
+                    var d = (byte)dat ^ (byte)a[i % a.Length] ^ (byte)b[i % b.Length];
+                    fout.WriteByte((byte)d);
+                    i++;
                 }
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void ConvertButton_Click(object sender, EventArgs e)
         {
             List<string> errors = new List<string>();
             foreach (var fileName in fileNames)
@@ -58,18 +60,18 @@ namespace TDEConverter
                 MessageBox.Show("All Done", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             listBox1.Items.Clear();
+            fileNames = new List<string>();
         }
-        private void Convert(string fileName)
+
+        private void OpenButton_Click(object sender, EventArgs e)
         {
-            string outpath = fileName.EndsWith(".tde") ? fileName.Substring(0, fileName.Length - 4) : fileName + ".tde";
-            using (FileStream fin =new FileStream(fileName,FileMode.Open), fout =new FileStream(outpath,FileMode.Create))
+            using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                int dat, i = 0;
-                while ((dat = fin.ReadByte()) != -1)
+                dialog.Multiselect = true;
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    var d = (byte)dat ^ (byte)a[i % a.Length] ^ (byte)b[i % b.Length];
-                    fout.WriteByte((byte)d);
-                    i++;
+                    fileNames.AddRange(dialog.FileNames);
+                    listBox1.Items.AddRange(dialog.FileNames.Select(n => n.EndsWith(".tde") ? n + " (decrypt)" : n + " (encrypt)").ToArray());
                 }
             }
         }
